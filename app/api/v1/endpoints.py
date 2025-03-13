@@ -6,17 +6,13 @@ from app.database import get_user_profile  # Function to fetch user profile from
 router = APIRouter()
 job_agent = JobSearchAgent()
 
-@router.post("/recommend-jobs/")
-async def recommend_jobs(user_query: str, user_id: Optional[str] = None):
+@router.post("/chat/")
+async def chat(user_query: str, user_id: Optional[str] = None):
     """
-    Recommend jobs based on user query.
-    - If `user_id` is provided, fetch user profile for personalized recommendations.
-    - Otherwise, return general job recommendations.
+    Handles interactive job search and general conversation.
+    - If user asks about jobs, recommend jobs.
+    - If user greets the bot, respond with a friendly message.
+    - If user input is unclear, ask follow-up questions.
     """
-    user_profile = get_user_profile(user_id) if user_id else None
-    results = job_agent.recommend_jobs(user_query, user_profile)
-    
-    if not results["jobs"]:
-        raise HTTPException(status_code=404, detail="No jobs found matching the criteria.")
-
-    return results
+    response = job_agent.recommend_jobs(user_query, user_id)
+    return response
